@@ -1,0 +1,111 @@
+﻿@model WebApplication.Models.IndexModel
+
+@{
+    ViewData["Title"] = "Главная страница";
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Научные проекты</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Сотрудники</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="upload-tab" data-toggle="tab" href="#upload" role="tab" aria-controls="upload" aria-selected="false">Загрузить проекты</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <br />
+            <input class="form-control" id="myInput" type="text" placeholder="Поиск ...">
+            <br />
+            <table id="projects" class="table table-bordered table-responsive table-hover">
+                <tr>
+                    <th>Код</th>
+                    <th>Наименование проекта</th>
+                    <th>Дата приема</th>
+                    <th>Дата сдачи</th>
+                    <th>ФИО заказчика</th>
+                    <th>Наименование организации</th>
+                    <th>БИН организации</th>
+                </tr>
+                @foreach (var d in Model.Projects)
+                {
+                    <tr>
+                        <td>@d.Code</td>
+                        <td>@d.Name</td>
+                        <td>@d.DateAcceptance.ToString("dd.MM.yyyy")</td>
+                        <td>@d.DateCompletion.ToString("dd.MM.yyyy")</td>
+                        <td>@d.Customer?.FIO</td>
+                        <td>@d.Customer?.Name</td>
+                        <td>@d.Customer?.Bin</td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <br />
+            <table class="table table-bordered table-responsive table-hover">
+                <tr>
+                    <th>ИИН</th>
+                    <th>ФИО</th>
+                    <th>Название департамента</th>
+                    <th>Должность</th>
+                    <th>Email</th>
+                    <th>Рабочий номер</th>
+                    <th>Сотовый номер</th>
+                </tr>
+                @foreach (var d in Model.Employees)
+                {
+                    <tr>
+                        <td>@d.IIN</td>
+                        <td>@d.Fullname</td>
+                        <td>@d.Department?.Name</td>
+                        <td>@d.Position</td>
+                        <td>@d.Email</td>
+                        <td>@d.WorkPhone</td>
+                        <td>@d.Mobile</td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="tab-pane" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+            <br />
+            @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="UploadedFile" name="UploadedFile"  lang="ru" data-browse="Выбрать">
+                    <label class="custom-file-label" for="UploadedFile">Выберите файл</label>
+                </div>
+                <hr />
+                <div>
+                    <input type="submit" name="Submit" value="Сохранить" />
+                </div>
+            }
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#projects tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            //$custom-file-text: (
+            //    en: "aa",
+            //    ru: "Elegir"
+            //);
+        });
+    </script>
+
+}
